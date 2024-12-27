@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Intervention Extension TBN",
+  "version": "1.0.0",
+  "description": "TBD",
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  },
+  "author": "April Lunarii, iliana etaoin",
+  "permissions": [
+    "alarms",
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "action": {
+    "default_icon": {
+      "48": "icon.svg",
+      "96": "icon.svg"
+    },
+    "default_popup": "menu/menu.html?popup=true"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "int-ex@iliana.fyi"
+    }
+  }
+}

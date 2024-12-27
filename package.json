@@ -1,0 +1,31 @@
+{
+  "name": "intervention-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "web-ext lint",
+    "posttest": "eslint ./",
+    "prebuild": "npm run build-css",
+    "build": "web-ext build",
+    "build-css": "npx tailwindcss -i style/main.css -o src/main.css --minify",
+    "start:dev": "web-ext run --firefox=deved -t=firefox-desktop",
+    "start:adb": "web-ext run -t=firefox-android --adb-device=[] --firefox-apk=org.mozilla.fenix"
+  },
+  "author": "April Lunarii, iliana etaoin",
+  "license": "MPL-2.0",
+  "description": "",
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "tailwindcss": "^3.4.16",
+    "web-ext": "^8.3.0"
+  },
+  "webExt": {
+    "sourceDir": "src/",
+    "build": {
+      "overwriteDest": true
+    },
+    "run": {
+      "firefox": "deved"
+    }
+  }
+}
