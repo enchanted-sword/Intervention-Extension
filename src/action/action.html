@@ -1,51 +1,43 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="../main.css" />
-  </head>
-  <body
-    class="bg-gradient-to-t from-slate-900 to-blue-950 h-[100vh] text-blue-100 flex items-center justify-center lg:py-16 py-8 lg:px-8 px-4"
-  >
-    <div
-      class="xl:max-w-6xl lg:max-w-4xl h-full w-full rounded-xl border-4 border-blue-500 bg-blue-100/5 lg:p-8 p-4 flex flex-col justify-between items-center gap-4"
-    >
-      <header>
-        <h1 class="mb-2">
-          you are attempting to access <span class="host"></span>
-        </h1>
-        <h2 class="mb-2 opacity-90">
-          this site is listed in your filtered sites. are you sure you want to
-          continue?
-        </h2>
-        <hr class="rounded-xl border-2 border-blue-500/25" />
-      </header>
-      <figure
-        role="timer"
-        class="w-3/4 h-auto aspect-square rounded-full border-4 border-blue-500 flex justify-center items-center"
-      >
-        <div
-          id="timer"
-          class="rounded-full aspect-square h-auto animate-wait timer"
-        ></div>
-      </figure>
-      <div class="justify-center flex flex-row lg:gap-8 gap-4">
-        <button
-          id="close"
-          class="transition-colors border-2 border-blue-500 hover:bg-blue-100/5 p-4 font-bold rounded-xl"
-        >
-          no thanks
-        </button>
-        <button
-          id="continue"
-          class="transition-colors hover:bg-blue-100/5 border-2 disabled:border-slate-500 disabled:cursor-not-allowed border-blue-500 p-4 font-bold rounded-xl"
-          disabled
-        >
-          continue to <span class="host"></span>
-        </button>
-      </div>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../main.css" />
+</head>
+
+<body
+  class="bg-gradient-to-t from-slate-900 to-blue-950 text-blue-100 flex items-center justify-center lg:py-16 py-8 lg:px-8 px-4">
+  <div
+    class="xl:max-w-6xl lg:max-w-4xl h-full w-full rounded-xl border-4 border-blue-500 bg-blue-100/5 lg:p-8 p-4 flex flex-col justify-between items-center gap-4">
+    <header>
+      <h1 class="mb-2">
+        you are attempting to access <span class="host"></span>
+      </h1>
+      <h2 class="mb-2 opacity-90">
+        this site is listed in your filtered sites. are you sure you want to
+        continue?
+      </h2>
+      <hr class="rounded-xl border-2 border-blue-500/25" />
+    </header>
+    <figure role="timer"
+      class="xl:w-3/4 w-1/2 h-auto aspect-square rounded-full border-4 border-blue-500 flex justify-center items-center">
+      <div id="timer" class="rounded-full aspect-square h-auto animate-wait timer"></div>
+    </figure>
+    <div class="justify-center flex flex-row lg:gap-8 gap-4">
+      <button id="close"
+        class="transition-colors border-2 border-blue-500 hover:bg-blue-100/5 p-4 font-bold rounded-xl">
+        no thanks
+      </button>
+      <button id="continue"
+        class="transition-colors hover:bg-blue-100/5 border-2 disabled:border-slate-500 disabled:cursor-not-allowed border-blue-500 p-4 font-bold rounded-xl"
+        disabled>
+        continue to <span class="host"></span>
+      </button>
     </div>
-    <script src="action.js"></script>
-  </body>
+  </div>
+  <script src="action.js"></script>
+</body>
+
 </html>

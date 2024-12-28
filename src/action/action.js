@@ -1,9 +1,14 @@
-let target, timer, timeoutId, continueButton, closeButton, waited = false;
+let target, host, timer, timeoutId, continueButton, closeButton, waited = false;
 
 function navigate() { window.open(target, '_self')?.focus(); }
-function onTimeout() {
+async function onTimeout() {
   continueButton.removeAttribute('disabled');
   continueButton.onclick = navigate;
+
+  const { timers } = await browser.storage.sync.get('timers');
+  timers[host] = (Date.now() + 10800000);
+  browser.storage.sync.set({ timers });
+
   waited = true;
 }
 function pause() {
@@ -23,7 +28,7 @@ function restart() {
 
 const init = () => {
   target = window.location.search.replace('?url=', '');
-  const host = (new URL(target)).hostname;
+  host = (new URL(target)).hostname;
 
   document.title = `Attempting to visit ${host}`;
   document.querySelectorAll('.host').forEach(span => span.innerText = host);
