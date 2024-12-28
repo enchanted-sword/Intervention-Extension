@@ -1,4 +1,4 @@
-let globalTimers;
+let globalTimers = {};
 
 function navigateListener(details) {
   const url = new URL(details.url);
@@ -41,13 +41,18 @@ browser.runtime.onInstalled.addListener(details => {
 browser.storage.onChanged.addListener((changes, areaName) => {
   const { hosts, timers } = changes;
 
-  globalTimers = timers?.newValue;
-  console.log(globalTimers);
+  timers?.newValue && (globalTimers = timers?.newValue);
   if (areaName !== 'sync' || typeof hosts === 'undefined') return;
 
   browser.webNavigation.onBeforeNavigate.removeListener(navigateListener);
 
-  updateNavigateListeners(hosts);
+  updateNavigateListeners(hosts.newValue);
+});
+
+browser.runtime.onMessage.addListener((message, { envType, tab }) => { // workaround to use tabs api to close non-script-opened tabs
+  if (message === 'close' && envType === 'addon_child') {
+    browser.tabs.remove(tab.id);
+  }
 });
 
 init();

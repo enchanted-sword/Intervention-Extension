@@ -26,6 +26,10 @@ function restart() {
   }
 }
 
+function closeExternally() { // workaround to use tabs api to close non-script-opened tabs
+  browser.runtime.sendMessage('close');
+}
+
 const init = () => {
   target = window.location.search.replace('?url=', '');
   host = (new URL(target)).hostname;
@@ -35,6 +39,9 @@ const init = () => {
 
   timer = document.getElementById('timer');
   continueButton = document.getElementById('continue');
+  closeButton = document.getElementById('close');
+
+  closeButton.addEventListener('click', closeExternally);
 
   timeoutId = window.setTimeout(onTimeout, 8000);
 
