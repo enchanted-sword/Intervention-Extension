@@ -4,14 +4,18 @@
 
 @layer base {
   @font-face {
-    font-family: 'Rubik';
-    src: url('/fonts/Roboto-Regular.ttf') format('truetype');
+    font-family: 'Roboto';
+    src: url('../font/Roboto-Regular.ttf') format('truetype');
     font-style: normal;
   }
   @font-face {
-    font-family: 'Rubik';
-    src: url('/fonts/Roboto-Bold.ttf') format('truetype');
+    font-family: 'Roboto';
+    src: url('../font/Roboto-Bold.ttf') format('truetype');
     font-weight: bold;
+  }
+
+  body {
+    @apply font-sans;
   }
 
   h1 {
