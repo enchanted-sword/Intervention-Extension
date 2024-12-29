@@ -3,7 +3,9 @@ let timer, timeoutId, waited = false;
 function onTimeout() {
   if (!waited) {
     timer.parentElement.remove();
-    document.querySelector('.disabled').classList.remove('disabled');
+
+    const disabledSection = document.querySelector('.disabled');
+    disabledSection.classList.remove('disabled');
 
     document.getElementById('add').addEventListener('click', addHost);
     document.querySelectorAll('[data-remove]').forEach(button => {
@@ -36,7 +38,7 @@ async function addHost() {
   const { hosts } = await browser.storage.sync.get('hosts');
 
   hosts[uuid] = "";
-  const hostElement = newHost([uuid, 'host not set']);
+  const hostElement = newHost([uuid, 'host not set'], true);
   document.getElementById('hosts').append(hostElement);
 
   browser.storage.sync.set({ hosts }).then(console.log(`host ${uuid} created`));
@@ -62,7 +64,7 @@ async function removeHost({ target }) {
   browser.storage.sync.set({ hosts }).then(console.log(`host ${uuid} (${host}) deleted`));
 }
 
-const newHost = ([uuid, host]) => {
+const newHost = ([uuid, host], operable = false) => {
   const wrapper = document.createElement('div');
 
   wrapper.innerHTML = `
@@ -101,15 +103,18 @@ const newHost = ([uuid, host]) => {
 
   const hostElement = wrapper.firstElementChild;
 
-  hostElement.querySelectorAll('[data-remove]').forEach(button => {
-    button.addEventListener('click', removeHost);
-  });
-  hostElement.querySelectorAll('[data-host]').forEach(button => {
-    button.addEventListener('change', updateHost);
-  });
+  if (operable) {
+    hostElement.querySelectorAll('[data-remove]').forEach(button => {
+      button.addEventListener('click', removeHost);
+    });
+    hostElement.querySelectorAll('[data-host]').forEach(button => {
+      button.addEventListener('change', updateHost);
+    });
+  }
 
   return hostElement;
 };
+
 
 const init = async () => {
   timer = document.getElementById('timer');

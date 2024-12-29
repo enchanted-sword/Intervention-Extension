@@ -62,6 +62,10 @@
   }
 
   .disabled {
-    @apply opacity-60 cursor-not-allowed !important;
+    @apply opacity-60;
+  }
+
+  .disabled button {
+    @apply cursor-not-allowed !important;
   }
 }
