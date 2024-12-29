@@ -1,14 +1,15 @@
 let target, host, timer, timeoutId, continueButton, closeButton, waited = false;
 
-function navigate() { window.open(target, '_self')?.focus(); }
-async function onTimeout() {
+async function navigate() {
+  const { timers } = await browser.storage.sync.get('timers');
+  timers[host] = Date.now();
+  await browser.storage.sync.set({ timers });
+
+  window.open(target, '_self')?.focus();
+}
+function onTimeout() {
   continueButton.removeAttribute('disabled');
   continueButton.onclick = navigate;
-
-  const { timers } = await browser.storage.sync.get('timers');
-  timers[host] = (Date.now() + 10800000);
-  browser.storage.sync.set({ timers });
-
   waited = true;
 }
 function pause() {

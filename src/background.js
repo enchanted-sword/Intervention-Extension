@@ -1,15 +1,21 @@
-let globalTimers = {};
+let globalTimers = {}, globalSettings = {
+  timeout: 180,
+  reintervene: true
+};
 
 function navigateListener(details) {
   const url = new URL(details.url);
-  const expiry = globalTimers[url.hostname] || 0;
-  if (expiry > Date.now()) return;
-  browser.tabs.update(details.tabId, { loadReplace: false, url: encodeURI(`action/action.html?url=${url.href}`) });
+  let expiry = globalTimers[url.hostname] || 0;
+  expiry += (globalSettings.timeout * 60000);
+
+  console.log(expiry);
+  if (expiry < Date.now()) { // only redirect if the re-intervention timer is up
+    browser.tabs.update(details.tabId, { loadReplace: false, url: encodeURI(`action/action.html?url=${url.href}`) });
+  }
 }
 
-const eventUrlFilter = hosts => Object.values(hosts).map(host => ({ hostEquals: host }));
 const updateNavigateListeners = hosts => {
-  url = eventUrlFilter(hosts);
+  url = Object.values(hosts).map(host => ({ hostEquals: host }));
   console.log(url);
 
   if (url.length) {
@@ -18,17 +24,19 @@ const updateNavigateListeners = hosts => {
 }
 
 const init = async () => {
-  let { hosts, timers } = await browser.storage.sync.get();
+  let { hosts, timers, settings } = await browser.storage.sync.get();
 
-  if (typeof hosts === 'undefined' || typeof timers === 'undefined') {
+  if (typeof hosts === 'undefined' || typeof timers === 'undefined' || typeof settings === 'undefined') {
     hosts ??= {};
     timers ??= {};
-    browser.storage.sync.set({ hosts, timers });
+    settings ??= globalSettings
+    browser.storage.sync.set({ hosts, timers, settings });
   }
 
-  console.log(hosts, timers);
+  console.log(hosts, timers, settings);
 
   globalTimers = timers;
+  globalSettings = settings;
   updateNavigateListeners(hosts);
 }
 
@@ -39,14 +47,16 @@ browser.runtime.onInstalled.addListener(details => {
 });
 
 browser.storage.onChanged.addListener((changes, areaName) => {
-  const { hosts, timers } = changes;
+  const { hosts, timers, settings } = changes;
+  console.log('storaged changed:', changes);
 
   timers?.newValue && (globalTimers = timers?.newValue);
-  if (areaName !== 'sync' || typeof hosts === 'undefined') return;
+  settings?.newValue && (globalSettings = settings.newValue);
 
-  browser.webNavigation.onBeforeNavigate.removeListener(navigateListener);
-
-  updateNavigateListeners(hosts.newValue);
+  if (areaName === 'sync' && typeof hosts !== 'undefined') {
+    browser.webNavigation.onBeforeNavigate.removeListener(navigateListener);
+    updateNavigateListeners(hosts.newValue);
+  }
 });
 
 browser.runtime.onMessage.addListener((message, { envType, tab }) => { // workaround to use tabs api to close non-script-opened tabs
