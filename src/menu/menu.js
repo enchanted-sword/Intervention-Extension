@@ -11,8 +11,9 @@ function onTimeout() {
     document.querySelectorAll('[data-remove]').forEach(button => {
       button.addEventListener('click', removeHost);
     });
-    document.querySelectorAll('[data-host]').forEach(button => {
-      button.addEventListener('change', updateHost);
+    document.querySelectorAll('[data-host]').forEach(input => {
+      input.removeAttribute('disabled');
+      input.addEventListener('change', updateHost);
     });
 
     waited = true;
@@ -66,6 +67,7 @@ async function removeHost({ target }) {
 
 const newHost = ([uuid, host], operable = false) => {
   const wrapper = document.createElement('div');
+  typeof operable === 'number' && (operable = false); // since function is used as an array map, operable will otherwise be assigned the index;
 
   wrapper.innerHTML = `
     <li class="rounded-xl p-2 border-2 border-blue-500/25" data-uuid="${uuid}">
@@ -80,10 +82,10 @@ const newHost = ([uuid, host], operable = false) => {
         </button>
       </div>
       <ul class="flex flex-col gap-2 divide-y-2 divide-blue-500/25 mt-2">
-        <li class="flex flex-row flex-wrap gap-x-4 justify-between items-center">
-          <h3 class="mb-2">hostname</h3>
+        <li class="flex flex-row flex-wrap gap-x-4 gap-y-2 justify-between items-center">
+          <h3>hostname</h3>
           <input type="text" data-has-icon placeholder="crouton.net" pattern="(?:www\\.)?[a-z\\d\\-]+\\.[a-z]{2,3}"
-            class="bg-blue-100 text-blue-950" required value="${host}" data-host />
+            class="bg-blue-100 text-blue-950" required value="${host}" data-host ${operable ? '' : 'disabled'}/>
         </li>
         <li class="flex flex-row justify-between items-center">
           <button data-remove
@@ -128,6 +130,10 @@ const init = async () => {
 
   const hostElements = Object.entries(hosts).map(newHost);
   document.getElementById('hosts').replaceChildren(...hostElements);
+
+  if (window.location.search === '?popup=true') {
+    document.body.style.width = '360px';
+  }
 };
 
 init();
