@@ -64,6 +64,28 @@
     background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23059669%22%3E%3Cpath%20d%3D%22M382-240%20154-468l57-57%20171%20171%20367-367%2057%2057-424%20424Z%22%2F%3E%3C%2Fsvg%3E');
   }
 
+  input[type='checkbox'] {
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    print-color-adjust: exact;
+    display: inline-block;
+    background-origin: border-box;
+    user-select: none;
+    border: 2px solid theme(colors.blue.500);
+    border-radius: 0.5rem;
+    color: theme(colors.blue.500);
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+  input[type='checkbox']:checked {
+    background-image: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27%239ca3af%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e');
+    background-size: 100% 100%;
+    background-color: currentColor;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
   .disabled {
     @apply opacity-60;
   }

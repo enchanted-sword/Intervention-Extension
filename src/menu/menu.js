@@ -1,4 +1,4 @@
-let timer, timeoutId, waited = false;
+let timer, timeoutId, waited = false, timeout, reintervene;
 
 function onTimeout() {
   if (!waited) {
@@ -12,9 +12,24 @@ function onTimeout() {
       button.addEventListener('click', removeHost);
     });
     document.querySelectorAll('[data-host]').forEach(input => {
-      input.removeAttribute('disabled');
       input.addEventListener('change', updateHost);
     });
+    timeout.addEventListener('change', async function ({ target }) {
+      if (target.checkValidity()) {
+        const { settings } = await browser.storage.sync.get('settings');
+
+        settings.timeout = target.value;
+        browser.storage.sync.set({ settings }).then(console.log(`timeout setting adjusted to ${settings.timeout} mins`));
+      }
+    });
+    reintervene.addEventListener('change', async function ({ target }) {
+      const state = !!target.checked;
+      const { settings } = await browser.storage.sync.get('settings');
+
+      settings.reintervene = state;
+      browser.storage.sync.set({ settings }).then(console.log(`reintervention setting changed to ${state}`));
+    });
+    document.querySelectorAll('[disabled]').forEach(input => input.removeAttribute('disabled'));
 
     waited = true;
   }
@@ -38,9 +53,10 @@ async function addHost() {
   const uuid = window.crypto.randomUUID();
   const { hosts } = await browser.storage.sync.get('hosts');
 
-  hosts[uuid] = "";
+  hosts[uuid] = "not-a-real.hostname";
   const hostElement = newHost([uuid, 'host not set'], true);
   document.getElementById('hosts').append(hostElement);
+  hostElement.querySelector('input').focus();
 
   browser.storage.sync.set({ hosts }).then(console.log(`host ${uuid} created`));
 }
@@ -74,14 +90,14 @@ const newHost = ([uuid, host], operable = false) => {
       <div class="flex flex-row justify-between items-center">
         <span></span>
         <h3 id="host-${uuid}">${host}</h3>
-        <button class="data-[open]:rotate-180 transition">
+        <button id="open-${uuid}" class="data-[open=true]:rotate-180 transition">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
           </svg>
         </button>
       </div>
-      <ul class="flex flex-col gap-2 divide-y-2 divide-blue-500/25 mt-2">
+      <ul id="config-${uuid}" class="flex-col gap-2 divide-y-2 divide-blue-500/25 mt-2 hidden">
         <li class="flex flex-row flex-wrap gap-x-4 gap-y-2 justify-between items-center">
           <h3>hostname</h3>
           <input type="text" data-has-icon placeholder="crouton.net" pattern="(?:www\\.)?[a-z\\d\\-]+\\.[a-z]{2,3}"
@@ -114,6 +130,16 @@ const newHost = ([uuid, host], operable = false) => {
     });
   }
 
+  hostElement.querySelector(`#open-${uuid}`).addEventListener('click', function () {
+    if (this.dataset.open) {
+      this.dataset.open = '';
+      document.getElementById(`config-${uuid}`).classList.replace('flex', 'hidden');
+    } else {
+      this.dataset.open = 'true';
+      document.getElementById(`config-${uuid}`).classList.replace('hidden', 'flex');
+    }
+  })
+
   return hostElement;
 };
 
@@ -126,10 +152,15 @@ const init = async () => {
   window.onblur = pause;
   window.onfocus = restart;
 
-  const { hosts } = await browser.storage.sync.get('hosts');
+  const { hosts, settings } = await browser.storage.sync.get();
 
   const hostElements = Object.entries(hosts).map(newHost);
+  timeout = document.getElementById('timeout');
+  reintervene = document.getElementById('reintervene');
+
   document.getElementById('hosts').replaceChildren(...hostElements);
+  timeout.value = settings.timeout;
+  settings.reintervene && reintervene.setAttribute('checked', '');
 
   if (window.location.search === '?popup=true') {
     document.body.style.width = '360px';
