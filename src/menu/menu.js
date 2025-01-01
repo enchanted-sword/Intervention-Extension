@@ -18,7 +18,7 @@ function onTimeout() {
       if (target.checkValidity()) {
         const { settings } = await browser.storage.sync.get('settings');
 
-        settings.timeout = target.value;
+        settings.timeout = +target.value;
         browser.storage.sync.set({ settings }).then(console.log(`timeout setting adjusted to ${settings.timeout} mins`));
       }
     });
