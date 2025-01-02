@@ -1,10 +1,12 @@
 let target, host, timer, timeoutId, continueButton, closeButton, waited = false;
 
 async function navigate() {
-  const { timers } = await browser.storage.sync.get('timers');
+  const { timers, settings } = await browser.storage.sync.get();
   timers[host] = Date.now();
   await browser.storage.sync.set({ timers });
+  if (settings.reintervene) browser.alarms.create(host, { delayInMinutes: settings.timeout });
 
+  browser.runtime.sendMessage('resolve');
   window.open(target, '_self')?.focus();
 }
 function onTimeout() {
@@ -44,7 +46,7 @@ const init = () => {
 
   closeButton.addEventListener('click', closeExternally);
 
-  timeoutId = window.setTimeout(onTimeout, 8000);
+  if (document.hasFocus()) timeoutId = window.setTimeout(onTimeout, 8000);
 
   window.onblur = pause;
   window.onfocus = restart;

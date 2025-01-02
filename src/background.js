@@ -8,7 +8,6 @@ function navigateListener(details) {
   let expiry = globalTimers[url.hostname] || 0;
   expiry += (globalSettings.timeout * 60000);
 
-  console.log(expiry);
   if (expiry < Date.now()) { // only redirect if the re-intervention timer is up
     browser.tabs.update(details.tabId, { loadReplace: false, url: encodeURI(`action/action.html?url=${url.href}`) });
   }
@@ -59,10 +58,28 @@ browser.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-browser.runtime.onMessage.addListener((message, { envType, tab }) => { // workaround to use tabs api to close non-script-opened tabs
-  if (message === 'close' && envType === 'addon_child') {
-    browser.tabs.remove(tab.id);
+browser.runtime.onMessage.addListener((message, { envType, tab }) => {
+  if (envType === 'addon_child') {
+    if (message === 'close') {  // workaround to use tabs api to close non-script-opened tabs
+      browser.tabs.remove(tab.id);
+    } else if (message === 'resolve') { // if multiple tabs under the same hostname are awaiting user action we resolve them all after one is cleared
+      const { title } = tab;
+      browser.tabs.query({ title }).then(tabs => {
+        tabs.forEach(waitingTab => {
+          const target = (new URL(waitingTab.url)).search.replace('?url=', '');
+          browser.tabs.update(waitingTab.id, { loadReplace: false, url: target });
+        })
+      });
+    }
   }
+});
+
+browser.alarms.onAlarm.addListener(alarm => {
+  const url = `*://${alarm.name}/*`;
+  browser.tabs.query({ url }).then(tabs =>
+    tabs.forEach(tab =>
+      browser.tabs.update(tab.id, { loadReplace: false, url: encodeURI(`action/action.html?url=${tab.url}`) })
+    ));
 });
 
 init();
