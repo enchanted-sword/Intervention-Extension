@@ -32,7 +32,7 @@
   }
 
   input:is([type='text'], [type='number']) {
-    @apply appearance-none rounded-md outline-none px-2 text-lg;
+    @apply appearance-none rounded-md px-2 text-lg outline-none;
   }
 }
 
@@ -42,8 +42,11 @@
   }
 
   .tab {
-    @apply text-xl rounded-t-xl p-2 bg-blue-100/5 flex-grow border-blue-500 border-2 transition-all;
+    @apply flex-grow rounded-t-xl border-2 border-blue-500 bg-blue-100/5 p-2 text-xl;
     border-style: none none solid none;
+    transition-property: flex-grow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
   }
   .tab[aria-selected='true'] {
     border-style: solid solid none solid;
@@ -72,6 +75,7 @@
     display: inline-block;
     background-origin: border-box;
     user-select: none;
+    cursor: pointer;
     border: 2px solid theme(colors.blue.500);
     border-radius: 0.5rem;
     color: theme(colors.blue.500);
@@ -87,7 +91,7 @@
   }
 
   .disabled {
-    @apply opacity-60;
+    @apply opacity-60 transition-all;
   }
 
   .disabled :is(button, input) {

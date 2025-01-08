@@ -47,6 +47,7 @@ const init = () => {
   closeButton.addEventListener('click', closeExternally);
 
   if (document.hasFocus()) timeoutId = window.setTimeout(onTimeout, 8000);
+  else pause();
 
   window.onblur = pause;
   window.onfocus = restart;

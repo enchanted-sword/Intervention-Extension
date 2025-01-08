@@ -14,6 +14,16 @@ function onTimeout() {
     document.querySelectorAll('[data-host]').forEach(input => {
       input.addEventListener('change', updateHost);
     });
+    document.querySelectorAll(`[id*="open-"]`).forEach(button => button.addEventListener('click', function () {
+      const { uuid } = this.closest('[data-uuid]').dataset;
+      if (this.dataset.open) {
+        this.dataset.open = '';
+        document.getElementById(`config-${uuid}`).classList.replace('flex', 'hidden');
+      } else {
+        this.dataset.open = 'true';
+        document.getElementById(`config-${uuid}`).classList.replace('hidden', 'flex');
+      }
+    }));
     timeout.addEventListener('change', async function ({ target }) {
       if (target.checkValidity()) {
         const { settings } = await browser.storage.sync.get('settings');
@@ -30,6 +40,7 @@ function onTimeout() {
       browser.storage.sync.set({ settings }).then(console.log(`reintervention setting changed to ${state}`));
     });
     document.querySelectorAll('[disabled]').forEach(input => input.removeAttribute('disabled'));
+    document.querySelector('[data-waiting]').removeAttribute('data-waiting');
 
     waited = true;
   }
@@ -87,21 +98,21 @@ const newHost = ([uuid, host], operable = false) => {
 
   wrapper.innerHTML = `
     <li class="rounded-xl p-2 border-2 border-blue-500/25" data-uuid="${uuid}">
-      <div class="flex flex-row justify-between items-center">
+      <button id="open-${uuid}" class="group flex flex-row justify-between items-center w-full">
         <span></span>
         <h3 id="host-${uuid}">${host}</h3>
-        <button id="open-${uuid}" class="data-[open=true]:rotate-180 transition">
+        <span class="group-data-[open=true]:rotate-180 transition">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
           </svg>
-        </button>
-      </div>
+        </span>
+      </button>
       <ul id="config-${uuid}" class="flex-col gap-2 divide-y-2 divide-blue-500/25 mt-2 hidden">
         <li class="flex flex-row flex-wrap gap-x-4 gap-y-2 justify-between items-center">
-          <h3>hostname</h3>
+          <label class="text-xl" for="hostname-${uuid}">hostname</label>
           <input type="text" data-has-icon placeholder="crouton.net" pattern="(?:www\\.)?[a-z\\d\\-]+\\.[a-z]{2,3}"
-            class="bg-blue-100 text-blue-950" required value="${host}" data-host ${operable ? '' : 'disabled'}/>
+            class="bg-blue-100 text-blue-950" id="hostname-${uuid}" required value="${host}" data-host ${operable ? '' : 'disabled'}/>
         </li>
         <li class="flex flex-row justify-between items-center">
           <button data-remove
@@ -128,21 +139,19 @@ const newHost = ([uuid, host], operable = false) => {
     hostElement.querySelectorAll('[data-host]').forEach(button => {
       button.addEventListener('change', updateHost);
     });
+    hostElement.querySelector(`#open-${uuid}`).addEventListener('click', function () {
+      if (this.dataset.open) {
+        this.dataset.open = '';
+        document.getElementById(`config-${uuid}`).classList.replace('flex', 'hidden');
+      } else {
+        this.dataset.open = 'true';
+        document.getElementById(`config-${uuid}`).classList.replace('hidden', 'flex');
+      }
+    });
   }
-
-  hostElement.querySelector(`#open-${uuid}`).addEventListener('click', function () {
-    if (this.dataset.open) {
-      this.dataset.open = '';
-      document.getElementById(`config-${uuid}`).classList.replace('flex', 'hidden');
-    } else {
-      this.dataset.open = 'true';
-      document.getElementById(`config-${uuid}`).classList.replace('hidden', 'flex');
-    }
-  })
 
   return hostElement;
 };
-
 
 const init = async () => {
   timer = document.getElementById('timer');
@@ -163,13 +172,14 @@ const init = async () => {
   settings.reintervene && reintervene.setAttribute('checked', '');
 
   document.querySelectorAll('button.tab').forEach(tab => {
-    const { target } = tab;
+    const target = tab.getAttribute('target');
     tab.addEventListener('click', function () {
+      document.querySelectorAll('section').forEach(section => section.classList.add('hidden'));
       const section = document.getElementById(target);
-      section.classList.toggle('flex');
-      section.classList.toggle('hidden');
+      section.classList.add('flex');
+      section.classList.remove('hidden');
 
-      document.querySelectorAll('button.tab').forEach(sectionTab => sectionTab.setAttribute('aria-select', 'false'));
+      document.querySelectorAll('button.tab').forEach(sectionTab => sectionTab.setAttribute('aria-selected', 'false'));
       tab.setAttribute('aria-selected', 'true');
     });
   });

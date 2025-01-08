@@ -11,23 +11,24 @@
 <body
   class="min-h-screen min-w-90 max-w-3xl w-full flex-1 bg-gradient-to-t from-slate-900 to-blue-950 text-blue-100 selection:bg-blue-500 rounded-xl m-0 p-1 overflow-hidden relative">
   <nav class="w-full justify-stretch flex flex-row">
-    <button target="configure" class="tab" aria-selected="true">configure</button>
+    <button target="config" class="tab" aria-selected="true">configure</button>
     <button target="about" class="tab" aria-selected="false">about</button>
   </nav>
   <main class="border-blue-500 border-2 border-t-0 bg-blue-100/5 rounded-b-xl overflow-clip">
-    <div class="relative scroll h-[500px] sm:h-fit">
-      <section id="config" class="flex flex-col gap-1 p-2 ">
-        <figure role="timer"
-          class="sticky top-2 w-full h-6 rounded-full border-2 border-blue-500 flex justify-center items-center transition-transform bg-blue-950 z-10">
-          <div id="timer" class="rounded-full h-full animate-wait timer"></div>
-        </figure>
+    <div class="group relative scroll h-[500px] sm:h-fit p-2" data-waiting="true">
+      <figure role="timer"
+        class="sticky top-2 w-full h-6 rounded-full border-2 border-blue-500 flex justify-center items-center transition-transform bg-blue-950 z-10">
+        <div id="timer" class="rounded-full h-full animate-wait timer"></div>
+      </figure>
+      <section id="config" class="flex flex-col gap-1 group-data-[waiting]:mt-2">
         <div class="disabled">
           <h2>general settings</h2>
           <hr class="rounded-xl border-2 border-blue-500/25 my-1" />
           <ul class="list-none divide-blue-500/25 mt-2 flex flex-col gap-2">
             <li
               class="rounded-xl p-2 border-2 border-blue-500/25 flex flex-row flex-wrap gap-x-4 gap-y-2 justify-between items-center">
-              <h3>time before wait must be experienced again to visit a filtered site</h3>
+              <label class="text-xl" for="timeout">time before wait must be experienced again to visit a filtered
+                site</label>
               <span class="flex flex-row gap-2 items-center">
                 <input type="number" placeholder="180" step="1" min="10" class="bg-blue-100 text-blue-950 w-24"
                   id="timeout" disabled>
@@ -36,7 +37,7 @@
             </li>
             <li
               class="rounded-xl p-2 border-2 border-blue-500/25 flex flex-row flex-wrap gap-x-4 gap-y-2 justify-between items-center">
-              <h3>reintervene automatically when the time period is up?</h3>
+              <label class="text-xl" for="reintervene">reintervene automatically when the time period is up?</label>
               <input type="checkbox" id="reintervene" disabled>
             </li>
           </ul>
@@ -56,7 +57,7 @@
           </ul>
         </div>
       </section>
-      <section id="about" class="hidden"></section>
+      <section id="about" class="hidden group-data-[waiting]:mt-2"></section>
     </div>
 
   </main>

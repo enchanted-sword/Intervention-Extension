@@ -83,4 +83,3 @@ browser.alarms.onAlarm.addListener(alarm => {
 });
 
 init();
-
