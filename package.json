@@ -16,6 +16,8 @@
   "description": "",
   "devDependencies": {
     "eslint": "^8.57.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
     "tailwindcss": "^3.4.16",
     "web-ext": "^8.3.0"
   },

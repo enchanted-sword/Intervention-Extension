@@ -162,6 +162,18 @@ const init = async () => {
   timeout.value = settings.timeout;
   settings.reintervene && reintervene.setAttribute('checked', '');
 
+  document.querySelectorAll('button.tab').forEach(tab => {
+    const { target } = tab;
+    tab.addEventListener('click', function () {
+      const section = document.getElementById(target);
+      section.classList.toggle('flex');
+      section.classList.toggle('hidden');
+
+      document.querySelectorAll('button.tab').forEach(sectionTab => sectionTab.setAttribute('aria-select', 'false'));
+      tab.setAttribute('aria-selected', 'true');
+    });
+  });
+
   if (window.location.search === '?popup=true') {
     document.body.style.width = '360px';
   }
