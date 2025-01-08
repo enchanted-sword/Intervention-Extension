@@ -1,6 +1,7 @@
 let globalTimers = {}, globalSettings = {
   timeout: 180,
-  reintervene: true
+  reintervene: true,
+  countdown: 8
 };
 
 function navigateListener(details) {

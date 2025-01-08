@@ -1,7 +1,6 @@
-let target, host, timer, timeoutId, continueButton, closeButton, waited = false;
+let timers, settings, countdown, target, host, timer, timeoutId, continueButton, closeButton, waited = false;
 
 async function navigate() {
-  const { timers, settings } = await browser.storage.sync.get();
   timers[host] = Date.now();
   await browser.storage.sync.set({ timers });
   if (settings.reintervene) browser.alarms.create(host, { delayInMinutes: settings.timeout });
@@ -25,7 +24,7 @@ function restart() {
   if (!waited) {
     timer.classList.add('animate-wait');
     timer.style.animationPlayState = 'running';
-    timeoutId = window.setTimeout(onTimeout, 8000);
+    timeoutId = window.setTimeout(onTimeout, countdown);
   }
 }
 
@@ -33,7 +32,9 @@ function closeExternally() { // workaround to use tabs api to close non-script-o
   browser.runtime.sendMessage('close');
 }
 
-const init = () => {
+const init = async () => {
+  ({ timers, settings } = await browser.storage.sync.get());
+  countdown = settings.countdown * 1000;
   target = window.location.search.replace('?url=', '');
   host = (new URL(target)).hostname;
 
@@ -46,7 +47,8 @@ const init = () => {
 
   closeButton.addEventListener('click', closeExternally);
 
-  if (document.hasFocus()) timeoutId = window.setTimeout(onTimeout, 8000);
+  ;; debugger;
+  if (document.hasFocus()) timeoutId = window.setTimeout(onTimeout, countdown);
   else pause();
 
   window.onblur = pause;
