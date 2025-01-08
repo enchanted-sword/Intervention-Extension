@@ -47,7 +47,6 @@ const init = async () => {
 
   closeButton.addEventListener('click', closeExternally);
 
-  ;; debugger;
   if (document.hasFocus()) timeoutId = window.setTimeout(onTimeout, countdown);
   else pause();
 
