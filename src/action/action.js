@@ -1,4 +1,4 @@
-let timers, settings, countdown, target, host, timer, timeoutId, continueButton, closeButton, waited = false;
+let timers, settings, countdownTime, target, host, timer, timeoutId, continueButton, closeButton, waited = false;
 
 async function navigate() {
   timers[host] = Date.now();
@@ -24,7 +24,7 @@ function restart() {
   if (!waited) {
     timer.classList.add('animate-wait');
     timer.style.animationPlayState = 'running';
-    timeoutId = window.setTimeout(onTimeout, countdown);
+    timeoutId = window.setTimeout(onTimeout, countdownTime);
   }
 }
 
@@ -34,9 +34,14 @@ function closeExternally() { // workaround to use tabs api to close non-script-o
 
 const init = async () => {
   ({ timers, settings } = await browser.storage.sync.get());
-  countdown = settings.countdown * 1000;
+  countdownTime = settings.countdown * 1000;
   target = window.location.search.replace('?url=', '');
   host = (new URL(target)).hostname;
+
+  document.getElementById('animation-override').textContent = `
+    .animate-wait {
+      animation: wait ${settings.countdown}s ease-in-out !important;
+    }`;
 
   document.title = `Attempting to visit ${host}`;
   document.querySelectorAll('.host').forEach(span => span.innerText = host);
@@ -47,7 +52,7 @@ const init = async () => {
 
   closeButton.addEventListener('click', closeExternally);
 
-  if (document.hasFocus()) timeoutId = window.setTimeout(onTimeout, countdown);
+  if (document.hasFocus()) timeoutId = window.setTimeout(onTimeout, countdownTime);
   else pause();
 
   window.onblur = pause;

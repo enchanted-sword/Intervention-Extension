@@ -27,12 +27,20 @@
           <ul class="list-none divide-blue-500/25 mt-2 flex flex-col gap-2">
             <li
               class="rounded-xl p-2 border-2 border-blue-500/25 flex flex-row flex-wrap gap-x-4 gap-y-2 justify-between items-center">
-              <label class="text-xl" for="timeout">time before wait must be experienced again to visit a filtered
-                site</label>
+              <label class="text-xl" for="timeout">time before wait must be experienced again to visit a filtered site</label>
               <span class="flex flex-row gap-2 items-center">
                 <input type="number" placeholder="180" step="1" min="10" class="bg-blue-100 text-blue-950 w-24"
                   id="timeout" disabled>
                 <p>minutes</p>
+              </span>
+            </li>
+            <li
+              class="rounded-xl p-2 border-2 border-blue-500/25 flex flex-row flex-wrap gap-x-4 gap-y-2 justify-between items-center">
+              <label class="text-xl" for="countdown">countdown time before filtered sites can be visited</label>
+              <span class="flex flex-row gap-2 items-center">
+                <input type="number" placeholder="8" step="1" min="5" class="bg-blue-100 text-blue-950 w-24"
+                  id="countdown" disabled>
+                <p>seconds</p>
               </span>
             </li>
             <li
@@ -62,6 +70,11 @@
 
   </main>
   <script src="menu.js"></script>
+  <style id="animation-override">
+    .animate-wait {
+      animation: wait 8s ease-in-out;
+    }
+  </style>
 </body>
 
 </html>

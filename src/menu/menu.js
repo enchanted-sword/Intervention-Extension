@@ -1,4 +1,4 @@
-let timer, timeoutId, waited = false, timeout, reintervene;
+let timer, timeoutId, countdownTime, waited = false, timeout, reintervene, countdown;
 
 function onTimeout() {
   if (!waited) {
@@ -39,6 +39,14 @@ function onTimeout() {
       settings.reintervene = state;
       browser.storage.sync.set({ settings }).then(console.log(`reintervention setting changed to ${state}`));
     });
+    countdown.addEventListener('change', async function ({ target }) {
+      if (target.checkValidity()) {
+        const { settings } = await browser.storage.sync.get('settings');
+
+        settings.countdown = +target.value;
+        browser.storage.sync.set({ settings }).then(console.log(`countdown setting adjusted to ${settings.countdown} seconds`));
+      }
+    });
     document.querySelectorAll('[disabled]').forEach(input => input.removeAttribute('disabled'));
     document.querySelector('[data-waiting]').removeAttribute('data-waiting');
 
@@ -56,7 +64,7 @@ function restart() {
   if (!waited) {
     timer.classList.add('animate-wait');
     timer.style.animationPlayState = 'running';
-    timeoutId = window.setTimeout(onTimeout, 8000);
+    timeoutId = window.setTimeout(onTimeout, countdownTime);
   }
 }
 
@@ -156,19 +164,22 @@ const newHost = ([uuid, host], operable = false) => {
 const init = async () => {
   timer = document.getElementById('timer');
 
-  timeoutId = window.setTimeout(onTimeout, 8000);
-
-  window.onblur = pause;
-  window.onfocus = restart;
-
   const { hosts, settings } = await browser.storage.sync.get();
+  countdownTime = settings.countdown * 1000;
+
+  document.getElementById('animation-override').textContent = `
+    .animate-wait {
+      animation: wait ${settings.countdown}s ease-in-out !important;
+    }`;
 
   const hostElements = Object.entries(hosts).map(newHost);
   timeout = document.getElementById('timeout');
   reintervene = document.getElementById('reintervene');
+  countdown = document.getElementById('countdown');
 
   document.getElementById('hosts').replaceChildren(...hostElements);
   timeout.value = settings.timeout;
+  countdown.value = settings.countdown;
   settings.reintervene && reintervene.setAttribute('checked', '');
 
   document.querySelectorAll('button.tab').forEach(tab => {
@@ -187,6 +198,11 @@ const init = async () => {
   if (window.location.search === '?popup=true') {
     document.body.style.width = '360px';
   }
+
+  timeoutId = window.setTimeout(onTimeout, countdownTime);
+
+  window.onblur = pause;
+  window.onfocus = restart;
 };
 
 init();
